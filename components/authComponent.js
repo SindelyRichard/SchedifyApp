@@ -6,16 +6,17 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { TouchableOpacity } from "react-native";
 
-export default function AuthComponent({ onSuccess }) {
-  const [username, setUsername] = useState("");
+export default function AuthComponent({ onSuccess,setUsername }) {
+  const [localusername, setLocalUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isLogin, setIsLogin] = useState(true);
 
   const handleSubmit = async () => {
     try {
       const fn = isLogin ? login : register;
-      const res = await fn(username, password);
+      const res = await fn(localusername, password);
       if (res.success) {
+        setUsername(localusername);
         onSuccess();
       } else {
         Alert.alert("Error", res.message || "Error");
@@ -49,8 +50,8 @@ export default function AuthComponent({ onSuccess }) {
           <TextInput
             className="border border-gray-300 p-4 rounded-xl mb-4 w-full text-gray-800 placeholder-gray-400"
             placeholder="Username"
-            value={username}
-            onChangeText={setUsername}
+            value={localusername}
+            onChangeText={setLocalUsername}
             autoCapitalize="none"
           />
 
