@@ -13,7 +13,7 @@ function MainPage({ username, userData, onNavigate }) {
     <LinearGradient colors={['#000000ff', '#8b5cf6']}
       style={{ flex: 1 }}
     >
-      <View className="mt-10 items-center">
+      <View className="mt-12 items-center">
 
         {/* ---- Profile Card ----*/}
         <View className="w-11/12 rounded-3xl shadow-xl overflow-hidden border-2">
@@ -23,18 +23,14 @@ function MainPage({ username, userData, onNavigate }) {
             end={{ x: 1, y: 0 }}
             className="flex-1 items-center justify-center"
           >
-            {userData ? (
-              <>
-                <Text className="text-2xl font-bold text-white pl-3">
-                  {username}
-                </Text>
-                <Text className="text-lg text-blue-100 pl-3">
-                  Level: {userData.level}
-                </Text>
-              </>
-            ) : (
-              <Text className="text-red-200">Failed to load user data.</Text>
-            )}
+
+            <Text className="text-2xl font-bold text-white pl-3">
+              {username}
+            </Text>
+            <Text className="text-lg text-blue-100 pl-3">
+              Level: {userData.level}
+            </Text>
+
           </LinearGradient>
         </View>
 

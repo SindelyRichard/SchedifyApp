@@ -1,10 +1,12 @@
-import { View, Text, TouchableOpacity, FlatList, Alert } from "react-native";
+import { View, Text, Modal, TouchableOpacity, FlatList, Alert } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { getDailyTask } from "../api";
 import { useEffect, useState } from "react";
 
 export default function DailyTasks({ onBack }) {
   const [tasks, setTasks] = useState([]);
+  const [selectedTask, setSelectedTask] = useState([]);
+  const [modalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -17,18 +19,35 @@ export default function DailyTasks({ onBack }) {
     })();
   }, []);
 
+  const openModal = (task) => {
+    setModalVisible(true);
+    setSelectedTask(task);
+  };
+
+  const applyModal = () => {
+    setModalVisible(false)
+    //calls api
+    console.log("Api called");
+  };
+
+  const closeModal = () => {
+    setModalVisible(false);
+  };
+
 
   return (
     <LinearGradient colors={['#000000ff', '#8b5cf6']} style={{ flex: 1 }}>
-      <View className="flex-1 w-full px-4 pt-10 items-center">
+      <View className="flex-1 w-full px-4 pt-12 items-center">
         <Text className="text-2xl font-bold text-white mb-6">Daily Tasks</Text>
         <FlatList
           data={tasks}
           renderItem={({ item }) =>
           (
-            <View
-              className="w-11/12 rounded-3xl shadow-xl overflow-hidden border mt-10 ml-5"
+            <TouchableOpacity
+              className="mt-10 rounded-3xl overflow-hidden"
               style={{ height: 100 }}
+              onPress={() => openModal(item)}
+              activeOpacity={0.8}
             >
               <LinearGradient
                 colors={["#3b82f6", "#b400fcff"]}
@@ -38,7 +57,7 @@ export default function DailyTasks({ onBack }) {
               >
                 <Text className="text-gray-800 font-extrabold">{item.title ?? "Untitled task"}</Text>
               </LinearGradient>
-            </View>
+            </TouchableOpacity>
           )}
           keyExtractor={(item, idx) => String(item._id ?? idx)}
           ListEmptyComponent={<Text className="text-white/80">No tasks found</Text>}
@@ -49,7 +68,35 @@ export default function DailyTasks({ onBack }) {
         <TouchableOpacity className="py-4 items-center rounded-xl" onPress={onBack}>
           <Text className="text-center mt-7 font-medium">Back</Text>
         </TouchableOpacity>
+
+        {/* ---- Modal ----*/}
+        
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={closeModal}>
+          <View className="flex-1 justify-center items-center">
+            <View className="w-80 bg-blue-500 rounded-2xl p-6 items-center">
+              <Text text-lg font-bold mb-4 text-center>
+                {selectedTask.title}
+              </Text>
+              <View className="flex-row justify-between w-full mt-4">
+                <TouchableOpacity onPress={closeModal}>
+                  <Text>
+                    ❌
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={applyModal}>
+                  <Text>
+                    ✅
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
       </View>
-    </LinearGradient>
+    </LinearGradient >
   );
 }
