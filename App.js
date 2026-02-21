@@ -1,5 +1,5 @@
 import "./global.css"
-import { Text, View } from "react-native";
+import { Text, View, ScrollView } from "react-native";
 import { useEffect, useState } from "react";
 import AuthComponent from "./components/authComponent";
 import { getLvlAndXp } from "./api";
@@ -13,10 +13,10 @@ function MainPage({ username, userData, onNavigate }) {
     <LinearGradient colors={['#000000ff', '#8b5cf6']}
       style={{ flex: 1 }}
     >
-      <View className="mt-12 items-center">
+      <View className="items-center">
 
         {/* ---- Profile Card ----*/}
-        <View className="w-11/12 rounded-3xl shadow-xl overflow-hidden border-2">
+        <View className="w-11/12 rounded-3xl shadow-xl overflow-hidden border-2 mt-12">
           <LinearGradient
             colors={["#8b5cf6", "#000000ff"]}
             start={{ x: 0, y: 0 }}
@@ -33,6 +33,13 @@ function MainPage({ username, userData, onNavigate }) {
 
           </LinearGradient>
         </View>
+      </View>
+      <ScrollView
+        contentContainerStyle={{
+          alignItems: "center"
+        }}
+        showsVerticalScrollIndicator={false}
+      >
 
         {/* ---- Daily Motivation Card ----*/}
         <View
@@ -105,7 +112,7 @@ function MainPage({ username, userData, onNavigate }) {
             <Text className="text-3xl font-extrabold">🏆 Leaderboard 🏆</Text>
           </LinearGradient>
         </TouchableOpacity>
-      </View>
+      </ScrollView>
     </LinearGradient>
   );
 }
@@ -154,7 +161,7 @@ export default function App() {
   }
 
   if (screen === 'daily') {
-    return <DailyTasks onBack={() => setScreen('home')} />
+    return <DailyTasks onBack={() => setScreen('home')} username={username} userData={userData} setUserData={setUserData} />;
   }
 
 

@@ -1,9 +1,9 @@
 import { View, Text, Modal, TouchableOpacity, FlatList, Alert } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { getDailyTask } from "../api";
+import { getDailyTask, completeTask, updateLevelAndXp } from "../api";
 import { useEffect, useState } from "react";
 
-export default function DailyTasks({ onBack }) {
+export default function DailyTasks({ onBack, username, userData, setUserData }) {
   const [tasks, setTasks] = useState([]);
   const [selectedTask, setSelectedTask] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
@@ -24,10 +24,28 @@ export default function DailyTasks({ onBack }) {
     setSelectedTask(task);
   };
 
-  const applyModal = () => {
-    setModalVisible(false)
-    //calls api
-    console.log("Api called");
+  const applyModal = async () => {
+    try {
+      if (!selectedTask) return;
+      await completeTask(selectedTask._id);
+
+      const xpGain = (userData.xp ?? 0) + 100;
+      let level = userData.level;
+
+      if (xpGain >= (level * 1000)) {
+        level += 1;
+      }
+      
+      await updateLevelAndXp(level, xpGain);
+      setUserData({ ...userData, xp: xpGain, level: level });
+      const data = await getDailyTask();
+      setTasks(Array.isArray(data) ? data : []);
+      
+      setModalVisible(false)
+
+    } catch (e) {
+      Alert.alert("Failed to complete task");
+    }
   };
 
   const closeModal = () => {
@@ -41,24 +59,39 @@ export default function DailyTasks({ onBack }) {
         <Text className="text-2xl font-bold text-white mb-6">Daily Tasks</Text>
         <FlatList
           data={tasks}
-          renderItem={({ item }) =>
-          (
-            <TouchableOpacity
-              className="mt-10 rounded-3xl overflow-hidden"
-              style={{ height: 100 }}
-              onPress={() => openModal(item)}
-              activeOpacity={0.8}
-            >
-              <LinearGradient
-                colors={["#3b82f6", "#b400fcff"]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
-                style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
-              >
-                <Text className="text-gray-800 font-extrabold">{item.title ?? "Untitled task"}</Text>
-              </LinearGradient>
-            </TouchableOpacity>
-          )}
+          renderItem={({ item }) => {
+            if (!item.completed) {
+              return (
+                <TouchableOpacity
+                  className="mt-10 rounded-3xl overflow-hidden"
+                  style={{ height: 100 }}
+                  onPress={() => openModal(item)}
+                  activeOpacity={0.8}
+                >
+                  <LinearGradient
+                    colors={["#3b82f6", "#b400fcff"]}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 0 }}
+                    style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
+                  >
+                    <Text className="text-gray-800 font-extrabold">{item.title ?? "Untitled task"}</Text>
+                  </LinearGradient>
+                </TouchableOpacity>);
+            } else {
+              return (
+                <View className="mt-10 rounded-3xl overflow-hidden" style={{ height: 100 }}>
+                  <LinearGradient
+                    colors={["#3b82f6", "#b400fcff"]}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 0 }}
+                    style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
+                  >
+                    <Text className="text-gray-800 font-extrabold">{item.title} ✅</Text>
+                  </LinearGradient>
+                </View>
+              );
+            }
+          }}
           keyExtractor={(item, idx) => String(item._id ?? idx)}
           ListEmptyComponent={<Text className="text-white/80">No tasks found</Text>}
           style={{ width: '100%' }}
@@ -70,7 +103,7 @@ export default function DailyTasks({ onBack }) {
         </TouchableOpacity>
 
         {/* ---- Modal ----*/}
-        
+
         <Modal
           animationType="slide"
           transparent={true}
