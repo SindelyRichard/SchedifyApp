@@ -1,6 +1,6 @@
 import { View, Text, Modal, TouchableOpacity, FlatList, Alert } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { getDailyTask, completeTask, updateLevelAndXp } from "../api";
+import { getDailyTask, completeDailyTask, updateLevelAndXp } from "../api";
 import { useEffect, useState } from "react";
 
 export default function DailyTasks({ onBack, username, userData, setUserData }) {
@@ -27,7 +27,7 @@ export default function DailyTasks({ onBack, username, userData, setUserData }) 
   const applyModal = async () => {
     try {
       if (!selectedTask) return;
-      await completeTask(selectedTask._id);
+      await completeDailyTask(selectedTask._id);
 
       const xpGain = (userData.xp ?? 0) + 100;
       let level = userData.level;

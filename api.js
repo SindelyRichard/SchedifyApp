@@ -22,6 +22,16 @@ export async function getDailyTask() {
   return res.json();
 }
 
+export async function completeDailyTask(taskId) {
+  const res = await fetch(`${API_URL}/Dailytasks/${taskId}/complete`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({}),
+  });
+  return res.json();
+}
+
 export async function completeTask(taskId) {
   const res = await fetch(`${API_URL}/tasks/${taskId}/complete`, {
     method: "PATCH",
