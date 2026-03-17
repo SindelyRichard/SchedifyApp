@@ -2,12 +2,12 @@ import "./global.css"
 import { Text, View, ScrollView } from "react-native";
 import { useEffect, useState } from "react";
 import AuthComponent from "./components/authComponent";
-import { getLvlAndXp } from "./api";
+import { getLvlAndXp,getMotivation } from "./api";
 import { LinearGradient } from "expo-linear-gradient";
 import { TouchableOpacity } from "react-native";
 import DailyTasks from "./components/dailyTasksComponent";
 
-function MainPage({ username, userData, onNavigate }) {
+function MainPage({ username, userData, onNavigate, motivation }) {
 
   return (
     <LinearGradient colors={['#000000ff', '#8b5cf6']}
@@ -51,9 +51,10 @@ function MainPage({ username, userData, onNavigate }) {
             colors={["#3b82f6", "#b400fcff"]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
-            style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
+            className="items-center justify-center p-6 w-full"
           >
-            <Text className="text-3xl font-extrabold">🚀 Daily motivation:</Text>
+            <Text className="text-3xl font-extrabold text-center">🚀 Daily motivation</Text>
+            <Text className="text-base text-center mt-2">{motivation?.title}</Text>
           </LinearGradient>
 
         </View>
@@ -122,10 +123,20 @@ export default function App() {
   const [username, setUsername] = useState("");
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [motivation, setMotivation] = useState(null);
 
   const [screen, setScreen] = useState('home');
 
   useEffect(() => {
+    const getMotiv = async () => {
+      try{
+        const motiv = await getMotivation();
+        setMotivation(motiv);
+      } catch (e){
+        Alert.alert("Error", "Failed to load the motivation");
+      }
+    };
+
     const getUserData = async () => {
       if (loggedIn && username) {
         setLoading(true);
@@ -140,6 +151,7 @@ export default function App() {
       }
     };
 
+    getMotiv();
     getUserData();
   }, [loggedIn, username]);
 
@@ -166,5 +178,5 @@ export default function App() {
 
 
 
-  return <MainPage username={username} userData={userData} onNavigate={setScreen} />;
+  return <MainPage username={username} userData={userData} onNavigate={setScreen} motivation={motivation}/>;
 }
