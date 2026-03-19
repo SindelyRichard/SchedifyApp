@@ -1,13 +1,13 @@
 import "./global.css"
-import { Text, View, ScrollView } from "react-native";
+import { Text, View, ScrollView, FlatList } from "react-native";
 import { useEffect, useState } from "react";
 import AuthComponent from "./components/authComponent";
-import { getLvlAndXp,getMotivation } from "./api";
+import { getLvlAndXp, getMotivation, getTopUser } from "./api";
 import { LinearGradient } from "expo-linear-gradient";
 import { TouchableOpacity } from "react-native";
 import DailyTasks from "./components/dailyTasksComponent";
 
-function MainPage({ username, userData, onNavigate, motivation }) {
+function MainPage({ username, userData, onNavigate, motivation, topPlayers }) {
 
   return (
     <LinearGradient colors={['#000000ff', '#8b5cf6']}
@@ -98,11 +98,9 @@ function MainPage({ username, userData, onNavigate, motivation }) {
         </TouchableOpacity>
 
         {/* ---- Leaderboard Card ----*/}
-        <TouchableOpacity
+        <View
           className="w-11/12 rounded-3xl shadow-xl overflow-hidden border mt-10"
           style={{ height: 160 }}
-          //onPress={handleDailyTasks}
-          activeOpacity={0.8}
         >
           <LinearGradient
             colors={["#3b82f6", "#b400fcff"]}
@@ -111,8 +109,21 @@ function MainPage({ username, userData, onNavigate, motivation }) {
             style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
           >
             <Text className="text-3xl font-extrabold">🏆 Leaderboard 🏆</Text>
+            <FlatList
+              data={topPlayers}
+              scrollEnabled={false}
+              renderItem={({ item, index }) => {
+                return (
+                  <Text className="text-3xl text-center">{index+1}. {item.username} Level:{item.level}</Text>
+                );
+              }}
+              keyExtractor={(item, idx, index) => String(item._id ?? idx, index)}
+              ListEmptyComponent={<Text className="text-white/80">No players found</Text>}
+              style={{ width: '100%' }}
+              contentContainerStyle={{ paddingBottom: 20 }}
+            />
           </LinearGradient>
-        </TouchableOpacity>
+        </View>
       </ScrollView>
     </LinearGradient>
   );
@@ -124,15 +135,26 @@ export default function App() {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [motivation, setMotivation] = useState(null);
+  const [topUsers, setTopUsers] = useState(null);
 
   const [screen, setScreen] = useState('home');
 
   useEffect(() => {
+
+    const getTopUsers = async () => {
+      try {
+        const tops = await getTopUser();
+        setTopUsers(tops.players);
+      } catch (e) {
+        Alert.alert("Error", "Failed to load top users");
+      }
+    };
+
     const getMotiv = async () => {
-      try{
+      try {
         const motiv = await getMotivation();
         setMotivation(motiv);
-      } catch (e){
+      } catch (e) {
         Alert.alert("Error", "Failed to load the motivation");
       }
     };
@@ -151,6 +173,7 @@ export default function App() {
       }
     };
 
+    getTopUsers();
     getMotiv();
     getUserData();
   }, [loggedIn, username]);
@@ -178,5 +201,5 @@ export default function App() {
 
 
 
-  return <MainPage username={username} userData={userData} onNavigate={setScreen} motivation={motivation}/>;
+  return <MainPage username={username} userData={userData} onNavigate={setScreen} motivation={motivation} topPlayers={topUsers} />;
 }
