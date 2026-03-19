@@ -35,12 +35,12 @@ export default function DailyTasks({ onBack, username, userData, setUserData }) 
       if (xpGain >= (level * 1000)) {
         level += 1;
       }
-      
+
       await updateLevelAndXp(level, xpGain);
       setUserData({ ...userData, xp: xpGain, level: level });
       const data = await getDailyTask();
       setTasks(Array.isArray(data) ? data : []);
-      
+
       setModalVisible(false)
 
     } catch (e) {
@@ -74,7 +74,7 @@ export default function DailyTasks({ onBack, username, userData, setUserData }) 
                     end={{ x: 1, y: 0 }}
                     style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
                   >
-                    <Text className="text-gray-800 font-extrabold">{item.title ?? "Untitled task"}</Text>
+                    <Text className="text-gray-800 font-extrabold">{item.title}</Text>
                   </LinearGradient>
                 </TouchableOpacity>);
             } else {

@@ -6,6 +6,7 @@ import { getLvlAndXp, getMotivation, getTopUser } from "./api";
 import { LinearGradient } from "expo-linear-gradient";
 import { TouchableOpacity } from "react-native";
 import DailyTasks from "./components/dailyTasksComponent";
+import Tasks from "./components/taskComponent";
 
 function MainPage({ username, userData, onNavigate, motivation, topPlayers }) {
 
@@ -82,7 +83,7 @@ function MainPage({ username, userData, onNavigate, motivation, topPlayers }) {
         <TouchableOpacity
           className="w-11/12 rounded-3xl shadow-xl overflow-hidden border mt-10"
           style={{ height: 160 }}
-          //onPress={handleDailyTasks}
+          onPress={() => onNavigate('tasks')}
           activeOpacity={0.8}
         >
 
@@ -114,7 +115,7 @@ function MainPage({ username, userData, onNavigate, motivation, topPlayers }) {
               scrollEnabled={false}
               renderItem={({ item, index }) => {
                 return (
-                  <Text className="text-3xl text-center">{index+1}. {item.username} Level:{item.level}</Text>
+                  <Text className="text-3xl text-center">{index + 1}. {item.username} Level:{item.level}</Text>
                 );
               }}
               keyExtractor={(item, idx, index) => String(item._id ?? idx, index)}
@@ -197,6 +198,11 @@ export default function App() {
 
   if (screen === 'daily') {
     return <DailyTasks onBack={() => setScreen('home')} username={username} userData={userData} setUserData={setUserData} />;
+  }
+
+  if (screen === 'tasks') {
+    return <Tasks onBack={() => setScreen('home')} username={username} userData={userData} setUserData={setUserData} />;
+
   }
 
 
