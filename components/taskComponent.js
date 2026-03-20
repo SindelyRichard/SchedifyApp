@@ -67,6 +67,7 @@ export default function Tasks({ onBack, username, userData, setUserData }) {
             setTasks(Array.isArray(data) ? data : []);
 
             setModalTitleVisible(false)
+            setTitle("");
 
         } catch (e) {
             Alert.alert("Failed to add a task");
@@ -142,6 +143,7 @@ export default function Tasks({ onBack, username, userData, setUserData }) {
                     <View className="flex-1 justify-center items-center">
                         <View className="w-80 bg-blue-500 rounded-2xl p-6 items-center">
                             <TextInput
+                                className="border border-gray-300 p-4 rounded-xl mb-4 w-full text-gray-800 placeholder-gray-400 bg-white"
                                 placeholder="Title"
                                 onChangeText={setTitle}
                                 value={title}
