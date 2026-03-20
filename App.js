@@ -174,9 +174,12 @@ export default function App() {
       }
     };
 
-    getTopUsers();
-    getMotiv();
-    getUserData();
+    if (screen === 'home') {
+      getTopUsers();
+      getMotiv();
+      getUserData();
+    }
+
   }, [loggedIn, username]);
 
   if (!loggedIn) {
