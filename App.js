@@ -1,14 +1,22 @@
 import "./global.css"
-import { Text, View, ScrollView, FlatList } from "react-native";
+import { Text, View, ScrollView, FlatList, Alert } from "react-native";
 import { useEffect, useState } from "react";
 import AuthComponent from "./components/authComponent";
-import { getLvlAndXp, getMotivation, getTopUser } from "./api";
+import { getLvlAndXp, getMotivation, getTopUser, logout } from "./api";
 import { LinearGradient } from "expo-linear-gradient";
 import { TouchableOpacity } from "react-native";
 import DailyTasks from "./components/dailyTasksComponent";
 import Tasks from "./components/taskComponent";
 
-function MainPage({ username, userData, onNavigate, motivation, topPlayers }) {
+function MainPage({ username, userData, onNavigate, motivation, topPlayers}) {
+  const handleLogout = async () => {
+    try{
+      await logout();
+      onNavigate('auth');
+    } catch (e){
+      Alert.alert("Error","Logout failed.");
+    }
+  };
 
   return (
     <LinearGradient colors={['#000000ff', '#8b5cf6']}
@@ -31,6 +39,13 @@ function MainPage({ username, userData, onNavigate, motivation, topPlayers }) {
             <Text className="text-lg text-blue-100 pl-3">
               Level: {userData.level}
             </Text>
+            <TouchableOpacity
+            onPress={handleLogout}
+            >
+            <Text>
+              Logout
+            </Text>
+            </TouchableOpacity>
 
           </LinearGradient>
         </View>
@@ -180,12 +195,21 @@ export default function App() {
       getUserData();
     }
 
-  }, [loggedIn, username]);
+    if(screen === 'auth'){
+    setLoggedIn(false);
+    setUsername("");
+    setUserData(null);
+  }
+
+  }, [loggedIn, username, screen]);
 
   if (!loggedIn) {
     return (
       <AuthComponent
-        onSuccess={() => setLoggedIn(true)}
+        onSuccess={() => {
+          setLoggedIn(true);
+          setScreen('home');
+        }}
         setUsername={setUsername}
       />
     );
@@ -208,7 +232,5 @@ export default function App() {
 
   }
 
-
-
-  return <MainPage username={username} userData={userData} onNavigate={setScreen} motivation={motivation} topPlayers={topUsers} />;
+  return <MainPage username={username} userData={userData} onNavigate={setScreen} motivation={motivation} topPlayers={topUsers}/>;
 }
