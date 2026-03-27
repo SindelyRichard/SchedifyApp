@@ -8,13 +8,13 @@ import { TouchableOpacity } from "react-native";
 import DailyTasks from "./components/dailyTasksComponent";
 import Tasks from "./components/taskComponent";
 
-function MainPage({ username, userData, onNavigate, motivation, topPlayers}) {
+function MainPage({ username, userData, onNavigate, motivation, topPlayers }) {
   const handleLogout = async () => {
-    try{
+    try {
       await logout();
       onNavigate('auth');
-    } catch (e){
-      Alert.alert("Error","Logout failed.");
+    } catch (e) {
+      Alert.alert("Error", "Logout failed.");
     }
   };
 
@@ -32,21 +32,25 @@ function MainPage({ username, userData, onNavigate, motivation, topPlayers}) {
             end={{ x: 1, y: 0 }}
             className="flex-1 items-center justify-center"
           >
-
-            <Text className="text-2xl font-bold text-white pl-3">
-              {username}
-            </Text>
-            <Text className="text-lg text-blue-100 pl-3">
-              Level: {userData.level}
-            </Text>
-            <TouchableOpacity
-            onPress={handleLogout}
-            >
-            <Text>
-              Logout
-            </Text>
-            </TouchableOpacity>
-
+            <View className="flex-row w-full justify-between items-center px-4">
+              <View>
+                <Text className="text-2xl font-bold text-white pl-3">
+                  {username}
+                </Text>
+                <Text className="text-lg text-blue-100 pl-3">
+                  Level: {userData.level}
+                </Text>
+              </View>
+              <View>
+                <TouchableOpacity
+                  onPress={handleLogout}
+                >
+                  <Text className="text-white">
+                    Logout
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
           </LinearGradient>
         </View>
       </View>
@@ -195,11 +199,11 @@ export default function App() {
       getUserData();
     }
 
-    if(screen === 'auth'){
-    setLoggedIn(false);
-    setUsername("");
-    setUserData(null);
-  }
+    if (screen === 'auth') {
+      setLoggedIn(false);
+      setUsername("");
+      setUserData(null);
+    }
 
   }, [loggedIn, username, screen]);
 
@@ -217,9 +221,14 @@ export default function App() {
 
   if (loading || !userData) {
     return (
-      <View className="flex-1 items-center justify-center bg-white">
-        <Text className="text-lg text-gray-500">Loading user data...</Text>
-      </View>
+      <LinearGradient
+            colors={["#a855f7", "#1f2937"]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={{ flex: 1, alignItems: "center", justifyContent: "center"}}
+          >
+        <Text className="text-lg text-white">Loading user data...</Text>
+      </LinearGradient>
     );
   }
 
@@ -232,5 +241,5 @@ export default function App() {
 
   }
 
-  return <MainPage username={username} userData={userData} onNavigate={setScreen} motivation={motivation} topPlayers={topUsers}/>;
+  return <MainPage username={username} userData={userData} onNavigate={setScreen} motivation={motivation} topPlayers={topUsers} />;
 }
