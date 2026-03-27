@@ -222,11 +222,11 @@ export default function App() {
   if (loading || !userData) {
     return (
       <LinearGradient
-            colors={["#a855f7", "#1f2937"]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 0 }}
-            style={{ flex: 1, alignItems: "center", justifyContent: "center"}}
-          >
+        colors={["#a855f7", "#1f2937"]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 0 }}
+        style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
+      >
         <Text className="text-lg text-white">Loading user data...</Text>
       </LinearGradient>
     );
