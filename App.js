@@ -1,20 +1,58 @@
 import "./global.css"
-import { Text, View, ScrollView, FlatList, Alert } from "react-native";
+import { Text, View, ScrollView, FlatList, Alert, Modal, TextInput } from "react-native";
 import { useEffect, useState } from "react";
 import AuthComponent from "./components/authComponent";
-import { getLvlAndXp, getMotivation, getTopUser, logout } from "./api";
+import { getLvlAndXp, getMotivation, getTopUser, logout, deleteUser, updateUsername } from "./api";
 import { LinearGradient } from "expo-linear-gradient";
 import { TouchableOpacity } from "react-native";
 import DailyTasks from "./components/dailyTasksComponent";
 import Tasks from "./components/taskComponent";
 
-function MainPage({ username, userData, onNavigate, motivation, topPlayers }) {
+function MainPage({ username, setUsername ,userData, onNavigate, motivation, topPlayers }) {
+  const [modalVisible, setModalVisible] = useState(false);
+  const [newUsername, setNewUsername] = useState("");
+
   const handleLogout = async () => {
     try {
       await logout();
       onNavigate('auth');
     } catch (e) {
       Alert.alert("Error", "Logout failed.");
+    }
+  };
+
+  const openModal = () => {
+    setModalVisible(true);
+  };
+
+  const closeModal = () => {
+    setModalVisible(false);
+  };
+
+  const applyDeleteAccModal = async () => {
+    try {
+      await deleteUser();
+      setModalVisible(false)
+      onNavigate('auth');
+
+    } catch (e) {
+      Alert.alert("Failed to delete the User");
+    }
+  };
+
+  const applyUsernameModal = async () => {
+    try {
+      if (!newUsername) return;
+      const res = await updateUsername(newUsername);
+      if(res.success){
+        setUsername(newUsername);
+      }
+
+      setNewUsername("");
+      setModalVisible(false)
+
+    } catch (e) {
+      Alert.alert("Failed to edit the Username");
     }
   };
 
@@ -34,12 +72,18 @@ function MainPage({ username, userData, onNavigate, motivation, topPlayers }) {
           >
             <View className="flex-row w-full justify-between items-center px-4">
               <View>
-                <Text className="text-2xl font-bold text-white pl-3">
-                  {username}
-                </Text>
-                <Text className="text-lg text-blue-100 pl-3">
-                  Level: {userData.level}
-                </Text>
+                <TouchableOpacity
+                  style={{ width:'auto' }}
+                  onPress={() => openModal()}
+                  activeOpacity={0.8}
+                >
+                  <Text className="text-2xl font-bold text-white pl-3">
+                    {username}
+                  </Text>
+                  <Text className="text-lg text-blue-100 pl-3">
+                    Level: {userData.level}
+                  </Text>
+                </TouchableOpacity>
               </View>
               <View>
                 <TouchableOpacity
@@ -143,6 +187,42 @@ function MainPage({ username, userData, onNavigate, motivation, topPlayers }) {
               contentContainerStyle={{ paddingBottom: 20 }}
             />
           </LinearGradient>
+
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={modalVisible}
+            onRequestClose={closeModal}>
+            <View className="flex-1 justify-center items-center">
+              <View className="w-80 bg-blue-500 rounded-2xl p-6 items-center">
+                <TextInput
+                  className="border border-gray-300 p-4 rounded-xl mb-4 w-full text-gray-800 placeholder-gray-400 bg-white"
+                  placeholder="New username"
+                  onChangeText={setNewUsername}
+                />
+                <View className="flex-row justify-between w-full mt-4">
+                  <TouchableOpacity onPress={closeModal}>
+                    <Text>
+                      Cancel
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={applyUsernameModal}>
+                    <Text>
+                      Done
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+                <View>
+                  <TouchableOpacity onPress={applyDeleteAccModal}>
+                    <Text>
+                      Delete account
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          </Modal>
+
         </View>
       </ScrollView>
     </LinearGradient>
@@ -232,6 +312,7 @@ export default function App() {
     );
   }
 
+
   if (screen === 'daily') {
     return <DailyTasks onBack={() => setScreen('home')} username={username} userData={userData} setUserData={setUserData} />;
   }
@@ -241,5 +322,5 @@ export default function App() {
 
   }
 
-  return <MainPage username={username} userData={userData} onNavigate={setScreen} motivation={motivation} topPlayers={topUsers} />;
+  return <MainPage username={username} setUsername={setUsername} userData={userData} onNavigate={setScreen} motivation={motivation} topPlayers={topUsers} />;
 }

@@ -1,4 +1,4 @@
-import {API_KEY} from "@env";
+import { API_KEY } from "@env";
 
 const API_URL = API_KEY;
 
@@ -30,6 +30,29 @@ export async function completeDailyTask(taskId) {
     body: JSON.stringify({}),
   });
   return res.json();
+}
+
+export async function updateUsername(newName) {
+  const res = await fetch(`${API_URL}/user/editUsername`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ newName }),
+  });
+  return res.json();
+}
+
+export async function deleteUser(userId) {
+  const res = await fetch(`${API_URL}/user/deleteUser`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+  if(res.status === 204){
+    return {success:true};
+  }else{
+    const data = await res.json();
+    return data;
+  }
 }
 
 export async function completeTask(taskId) {
