@@ -63,14 +63,14 @@ function MainPage({ username, setUsername ,userData, onNavigate, motivation, top
       <View className="items-center">
 
         {/* ---- Profile Card ----*/}
-        <View className="w-11/12 rounded-3xl shadow-xl overflow-hidden border-2 mt-12">
+        <View className="w-11/12 rounded-3xl shadow-xl overflow-hidden border-2 mt-12 items-center">
           <LinearGradient
             colors={["#8b5cf6", "#000000ff"]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
-            className="flex-1 items-center justify-center"
+            className="justify-center h-20"
           >
-            <View className="flex-row w-full justify-between items-center px-4">
+            <View className="flex-row w-full justify-between items-center">
               <View>
                 <TouchableOpacity
                   style={{ width:'auto' }}
