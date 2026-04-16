@@ -75,12 +75,12 @@ export async function login(username, password) {
   return res.json();
 }
 
-export async function register(username, password) {
+export async function register(username, password, email) {
   const res = await fetch(`${API_URL}/register`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
-    body: JSON.stringify({ username, password }),
+    body: JSON.stringify({ username, password, email }),
   });
   return res.json();
 }
@@ -91,6 +91,16 @@ export async function logout() {
     headers: { "Content-Type": "application/json" },
     credentials: "include",
     body: JSON.stringify({}),
+  });
+  return res.json();
+}
+
+export async function sendEmailCode(email) {
+  const res = await fetch(`${API_URL}/sendCode`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ email }),
   });
   return res.json();
 }
