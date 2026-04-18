@@ -47,9 +47,9 @@ export async function deleteUser(userId) {
     method: "DELETE",
     credentials: "include",
   });
-  if(res.status === 204){
-    return {success:true};
-  }else{
+  if (res.status === 204) {
+    return { success: true };
+  } else {
     const data = await res.json();
     return data;
   }
@@ -101,6 +101,16 @@ export async function sendEmailCode(email) {
     headers: { "Content-Type": "application/json" },
     credentials: "include",
     body: JSON.stringify({ email }),
+  });
+  return res.json();
+}
+
+export async function resetPassword(email, code, newPassword) {
+  const res = await fetch(`${API_URL}/changePasswd`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ email, code, newPassword }),
   });
   return res.json();
 }

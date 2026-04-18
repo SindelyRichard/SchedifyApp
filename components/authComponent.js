@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { View, Text, TextInput, Button, Alert } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { login, register, sendEmailCode } from "../api";
+import { login, register, sendEmailCode, resetPassword } from "../api";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { TouchableOpacity } from "react-native";
@@ -12,17 +12,40 @@ export default function AuthComponent({ onSuccess, setUsername }) {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [isForgotPasswd, setIsForgotPasswd] = useState(false);
+  const [isCodeSent, setIsCodeSent] = useState(false);
+  const [code, setCode] = useState("");
 
   const handleSubmit = async () => {
+    const trimmedPassword = password.trim();
+    const trimmedEmail = email.trim();
+    const trimmedUsername = localusername.trim();
+
+    if (!trimmedUsername) {
+      return Alert.alert("Error", "Username is required");
+    }
+
+    if (!trimmedPassword) {
+      return Alert.alert("Error", "Password cannot be empty or spaces");
+    }
+
+    if (trimmedPassword.length < 6) {
+      return Alert.alert("Error", "Password must be at least 6 characters");
+
+    }
+
+    if (!isLogin && !trimmedEmail) {
+      return Alert.alert("Error", "Email is required");
+    }
+
     try {
       let res;
       if (!isLogin) {
-        res = await register(localusername, password, email);
+        res = await register(trimmedUsername, trimmedPassword, trimmedEmail);
       } else {
-        res = await login(localusername, password);
+        res = await login(trimmedUsername, trimmedPassword);
       }
       if (res.success) {
-        setUsername(localusername);
+        setUsername(trimmedUsername);
         onSuccess();
       } else {
         Alert.alert("Error", res.message || "Error");
@@ -35,6 +58,7 @@ export default function AuthComponent({ onSuccess, setUsername }) {
   const sendEmail = async () => {
     try {
       const res = await sendEmailCode(email);
+      setIsCodeSent(true);
     } catch (e) {
       Alert.alert(e.message);
     }
@@ -48,6 +72,25 @@ export default function AuthComponent({ onSuccess, setUsername }) {
   const backToMain = () => {
     setIsForgotPasswd(false);
     setEmail("");
+  };
+
+  const changePasswd = async () => {
+    const trimmedPassword = password.trim();
+    if (!trimmedPassword) {
+      return Alert.alert("Error", "Password cannot be empty");
+    }
+
+    if (trimmedPassword.length < 6) {
+      return Alert.alert("Error", "Password must be at least 6 characters");
+    }
+    try {
+      const res = await resetPassword(email, code, trimmedPassword);
+      setIsCodeSent(false);
+      setIsForgotPasswd(false);
+      console.log(res.message);
+    } catch (e) {
+      Alert.alert(e.message);
+    }
   };
 
   return (
@@ -93,7 +136,52 @@ export default function AuthComponent({ onSuccess, setUsername }) {
             />
           ))}
 
-          {isForgotPasswd && (
+          {isCodeSent && (
+            <>
+              <TextInput
+                className="border border-gray-300 p-4 rounded-xl mb-4 w-full text-gray-800 placeholder-gray-400"
+                placeholder="Code"
+                value={code}
+                onChangeText={setCode}
+                keyboardType="number-pad"
+                autoCapitalize="none"
+                autoCorrect={false}
+              />
+              <TextInput
+                className="border border-gray-300 p-4 rounded-xl mb-4 w-full text-gray-800 placeholder-gray-400"
+                placeholder="New password"
+                value={password}
+                onChangeText={setPassword}
+                autoCapitalize="none"
+                autoCorrect={false}
+              />
+              <LinearGradient
+                colors={['#3b82f6', '#8b5cf6']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                className="rounded-xl shadow-lg w-full"
+              >
+                <TouchableOpacity
+                  className="py-4 items-center rounded-xl"
+                  onPress={() => changePasswd()}
+                  activeOpacity={0.8}
+                >
+                  <Text className="text-white font-bold text-lg">
+                    Confirm
+                  </Text>
+                </TouchableOpacity>
+              </LinearGradient>
+
+              <Text
+                className="text-blue-500 text-center mt-7 font-medium"
+                onPress={() => backToMain()}
+              >
+                Back
+              </Text>
+            </>
+          )}
+
+          {(isForgotPasswd && !isCodeSent) && (
             <>
               <TextInput
                 className="border border-gray-300 p-4 rounded-xl mb-4 w-full text-gray-800 placeholder-gray-400"
