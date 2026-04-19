@@ -24,12 +24,37 @@ export default function AuthComponent({ onSuccess, setUsername }) {
       return Alert.alert("Error", "Username is required");
     }
 
+    if(/\s/.test(password)) {
+      return Alert.alert("Error","Password cannot contain spaces");
+    }
+
+    if(/\s/.test(localusername)) {
+      return Alert.alert("Error","Username cannot contain spaces");
+    }
+
+    if(/\s/.test(email)) {
+      return Alert.alert("Error","Email cannot contain spaces");
+    }
+
+    if(!/^[a-zA-Z0-9_]+$/.test(trimmedUsername)){
+      return  Alert.alert("Error","Username can only contain letters, numbers and underscore (_)");
+    }
+
+    if(!(/^[^\s@]+@+[^\s@]+\.[^\s@]+$/).test(trimmedEmail)){
+      return Alert.alert("Error","Please enter a valid email address");
+    }
+
     if (!trimmedPassword) {
       return Alert.alert("Error", "Password cannot be empty or spaces");
     }
 
     if (trimmedPassword.length < 6) {
       return Alert.alert("Error", "Password must be at least 6 characters");
+
+    }
+
+    if (trimmedUsername.length < 6) {
+      return Alert.alert("Error", "Username must be at least 6 characters");
 
     }
 
