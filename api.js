@@ -130,6 +130,11 @@ export async function getYourTask() {
   return res.json();
 }
 
+export async function getYourStats() {
+  const res = await fetch(`${API_URL}/getStat`, { credentials: "include" });
+  return res.json();
+}
+
 export async function getMotivation() {
   const res = await fetch(`${API_URL}/getMotivation`, { credentials: "include" });
   return res.json();

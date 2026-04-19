@@ -2,13 +2,13 @@ import "./global.css"
 import { Text, View, ScrollView, FlatList, Alert, Modal, TextInput } from "react-native";
 import { useEffect, useState } from "react";
 import AuthComponent from "./components/authComponent";
-import { getLvlAndXp, getMotivation, getTopUser, logout, deleteUser, updateUsername } from "./api";
+import { getLvlAndXp, getMotivation, getTopUser, logout, deleteUser, updateUsername, getYourStats } from "./api";
 import { LinearGradient } from "expo-linear-gradient";
 import { TouchableOpacity } from "react-native";
 import DailyTasks from "./components/dailyTasksComponent";
 import Tasks from "./components/taskComponent";
 
-function MainPage({ username, setUsername ,userData, onNavigate, motivation, topPlayers }) {
+function MainPage({ username, setUsername ,userData, onNavigate, motivation, topPlayers, avg, completedTasks }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [newUsername, setNewUsername] = useState("");
 
@@ -187,6 +187,25 @@ function MainPage({ username, setUsername ,userData, onNavigate, motivation, top
               contentContainerStyle={{ paddingBottom: 20 }}
             />
           </LinearGradient>
+          </View>
+
+          {/* ---- Stat Card ----*/}
+        <View
+          className="w-11/12 rounded-3xl shadow-xl overflow-hidden border mt-10"
+          style={{ height: 160 }}
+        >
+          <LinearGradient
+            colors={["#3b82f6", "#b400fcff"]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
+          >
+            <Text className="text-3xl font-extrabold">Stats</Text>
+            <Text className="text-xl text-center">Completion: {avg}%</Text>
+            <Text className="text-xl text-center">Completed tasks: {completedTasks}</Text>
+          </LinearGradient>
+          </View>
+
 
           <Modal
             animationType="slide"
@@ -222,8 +241,6 @@ function MainPage({ username, setUsername ,userData, onNavigate, motivation, top
               </View>
             </View>
           </Modal>
-
-        </View>
       </ScrollView>
     </LinearGradient>
   );
@@ -236,6 +253,8 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [motivation, setMotivation] = useState(null);
   const [topUsers, setTopUsers] = useState(null);
+  const [avg, setAvg] = useState(0);
+  const [completedCount, setCompletedCount] = useState(0);
 
   const [screen, setScreen] = useState('home');
 
@@ -246,7 +265,7 @@ export default function App() {
         const tops = await getTopUser();
         setTopUsers(tops.players);
       } catch (e) {
-        Alert.alert("Error", "Failed to load top users");
+        Alert.alert('Error', 'Failed to load top users');
       }
     };
 
@@ -255,7 +274,7 @@ export default function App() {
         const motiv = await getMotivation();
         setMotivation(motiv);
       } catch (e) {
-        Alert.alert("Error", "Failed to load the motivation");
+        Alert.alert('Error', 'Failed to load the motivation');
       }
     };
 
@@ -266,17 +285,32 @@ export default function App() {
           const data = await getLvlAndXp(username);
           setUserData(data);
         } catch (e) {
-          Alert.alert("Error", "Server error");
+          Alert.alert('Error', 'Server error');
         } finally {
           setLoading(false);
         }
       }
     };
 
+    const getStats = async () =>{
+      try{
+        const res = await getYourStats();
+        if(!res){
+          return {success:false ,message:'Failed to get the stats'};
+        }
+        setAvg(res.avg);
+        setCompletedCount(res.completed);
+      }catch(e){
+        Alert.alert('Error','Failed to load the stats');
+      }
+
+    };
+
     if (screen === 'home') {
       getTopUsers();
       getMotiv();
       getUserData();
+      getStats();
     }
 
     if (screen === 'auth') {
@@ -322,5 +356,5 @@ export default function App() {
 
   }
 
-  return <MainPage username={username} setUsername={setUsername} userData={userData} onNavigate={setScreen} motivation={motivation} topPlayers={topUsers} />;
+  return <MainPage username={username} setUsername={setUsername} userData={userData} onNavigate={setScreen} motivation={motivation} topPlayers={topUsers} avg={avg} completedTasks={completedCount} />;
 }
