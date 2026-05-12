@@ -203,6 +203,7 @@ function MainPage({ username, setUsername ,userData, onNavigate, motivation, top
             <Text className="text-3xl font-extrabold">Stats</Text>
             <Text className="text-xl text-center">Completion: {avg}%</Text>
             <Text className="text-xl text-center">Completed tasks: {completedTasks}</Text>
+            <Text className="text-xl text-center">XP: {userData.xp}</Text>
           </LinearGradient>
           </View>
 

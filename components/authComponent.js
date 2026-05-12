@@ -32,7 +32,7 @@ export default function AuthComponent({ onSuccess, setUsername }) {
       return Alert.alert("Error","Username cannot contain spaces");
     }
 
-    if(/\s/.test(email)) {
+    if((/\s/.test(email)) && (!isLogin)) {
       return Alert.alert("Error","Email cannot contain spaces");
     }
 
@@ -40,7 +40,7 @@ export default function AuthComponent({ onSuccess, setUsername }) {
       return  Alert.alert("Error","Username can only contain letters, numbers and underscore (_)");
     }
 
-    if(!(/^[^\s@]+@+[^\s@]+\.[^\s@]+$/).test(trimmedEmail)){
+    if((!(/^[^\s@]+@+[^\s@]+\.[^\s@]+$/).test(trimmedEmail)) && !isLogin){
       return Alert.alert("Error","Please enter a valid email address");
     }
 
